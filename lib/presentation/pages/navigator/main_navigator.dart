@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/home/home_bloc.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/comment_list_page.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/comment_page.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/home_page.dart';
 import 'package:tips_and_tricks_flutter/utils/navigator_support.dart';
 
@@ -26,6 +28,12 @@ class _MainNavigatorState extends State<MainNavigator> {
             case HomePage.path:
               return MaterialPageRoute(
                   builder: (context) => const HomePage());
+            case CommentPage.path:
+              return MaterialPageRoute(
+                  builder: (context) => const CommentPage());
+            case CommentListPage.path:
+              return MaterialPageRoute(
+                  builder: (context) => const CommentListPage());
             default:
               return MaterialPageRoute(builder: (context) => Container());
           }

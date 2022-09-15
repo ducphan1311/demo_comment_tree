@@ -5,4 +5,8 @@ abstract class CommentMockRepository {
   List<CommentModel> getComment();
 
   List<CommentListModel> getCommentList();
+
+  Future<List<CommentModel>> getMainComment(int pageIndex);
+
+  List<CommentModel> getSubComment(int pageIndex);
 }

@@ -7,6 +7,8 @@ import 'package:tips_and_tricks_flutter/presentation/blocs/home/home_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/home/home_state.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_list_page.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_page.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/comment_page_3.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/web_view_page.dart';
 
 class HomePage extends StatefulWidget {
   static const path = 'HomePage';
@@ -79,6 +81,12 @@ class _HomePageState extends State<HomePage> {
                     ElevatedButton(onPressed: (){
                       Navigator.pushNamed(context, CommentListPage.path);
                     }, child: Text('CommentListPage')),
+                    ElevatedButton(onPressed: (){
+                      Navigator.pushNamed(context, CommentPage3.path);
+                    }, child: Text('CommentPage3')),
+                    ElevatedButton(onPressed: (){
+                      Navigator.pushNamed(context, WebViewPage.path);
+                    }, child: Text('WebViewPage')),
                   ],
                 );
               },

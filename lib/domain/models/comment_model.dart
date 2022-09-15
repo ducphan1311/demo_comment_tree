@@ -12,6 +12,7 @@ class CommentModel {
   List<CommentModel> comments;
   bool expanded;
   List<int> parentPositions;
+  int childAmount;
 
   CommentModel({
     required this.id,
@@ -24,5 +25,10 @@ class CommentModel {
     required this.comments,
     required this.expanded,
     this.parentPositions = const <int>[],
+    this.childAmount = 0,
   });
+
+  factory CommentModel.fakeId(int id) {
+    return CommentModel(id: id, userId: id, avatar: 'avatar', userName: 'duc$id', content: 'abc$id', isRoot: false, activeTime: DateTime.now().millisecondsSinceEpoch, comments: [], expanded: false, childAmount: id%3==0?3:0);
+  }
 }

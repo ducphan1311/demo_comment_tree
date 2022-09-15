@@ -42,16 +42,20 @@ class _CommentListPageState extends State<CommentListPage> {
                         print('index: ${commentLists.indexOf(commentListData)}');
                       }
                   return TreeNode2(
-                    key: UniqueKey(),
+                    key: ValueKey(commentLists.first.comments[index].id),
                     commentLists: commentLists,
                     comments: commentListData != null ? commentListData.comments : [],
                     // comments: commentLists.first.comments,
                     data: commentLists.first.comments[index],
-                    commentListData: commentListData,
+                    currentCommentListData: commentListData,
+                    parentCommentListData: commentLists.first,
                     offsetLeft: 24,
                     onTap: (c){},
                     onExpand: (c){},
                     onCollapse: (c){},
+                    onReply: (parentCommentList, comment) {
+                      commentListBloc.reply(parentCommentList: parentCommentList, parentComment: comment, content: 'content');
+                    },
                   );
                 },
               ),

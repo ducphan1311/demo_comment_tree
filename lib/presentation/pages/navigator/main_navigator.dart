@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/home/home_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_list_page.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_page.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/comment_page_3.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/home_page.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/web_view_page.dart';
 import 'package:tips_and_tricks_flutter/utils/navigator_support.dart';
 
 class MainNavigator extends StatefulWidget {
@@ -34,6 +36,12 @@ class _MainNavigatorState extends State<MainNavigator> {
             case CommentListPage.path:
               return MaterialPageRoute(
                   builder: (context) => const CommentListPage());
+            case WebViewPage.path:
+              return MaterialPageRoute(
+                  builder: (context) => const WebViewPage());
+            case CommentPage3.path:
+              return MaterialPageRoute(
+                  builder: (context) => const CommentPage3());
             default:
               return MaterialPageRoute(builder: (context) => Container());
           }

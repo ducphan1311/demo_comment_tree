@@ -115,7 +115,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 1,
             avatar: '',
             userName: 'duc1',
-            content: 'abc',
+            content: 'abc0',
             isRoot: true,
             activeTime: DateTime(2020, 1, 1, 0, 1).millisecond,
             comments: <CommentModel>[],
@@ -125,7 +125,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 2,
             avatar: '',
             userName: 'duc2',
-            content: 'abc',
+            content: 'abc1',
             isRoot: true,
             activeTime: DateTime(2020, 1, 1, 0, 2).millisecond,
             comments: <CommentModel>[],
@@ -135,7 +135,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 1,
             avatar: '',
             userName: 'duc1',
-            content: 'abc',
+            content: 'abc2',
             isRoot: true,
             activeTime: DateTime(2020, 1, 1, 0, 3).millisecond,
             comments: <CommentModel>[],
@@ -145,7 +145,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 3,
             avatar: '',
             userName: 'duc3',
-            content: 'abc',
+            content: 'abc3',
             isRoot: true,
             activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
             comments: <CommentModel>[],
@@ -159,7 +159,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 2,
             avatar: '',
             userName: 'duc2',
-            content: 'abc',
+            content: 'abc0-01',
             isRoot: false,
             activeTime: DateTime(2020, 1, 1, 0, 2).millisecond,
             comments: <CommentModel>[],
@@ -170,7 +170,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 3,
             avatar: '',
             userName: 'duc3',
-            content: 'abc',
+            content: 'abc0-02',
             isRoot: false,
             activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
             comments: <CommentModel>[],
@@ -181,14 +181,14 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 1,
             avatar: '',
             userName: 'duc1',
-            content: 'abc',
+            content: 'abc0-03',
             isRoot: false,
             activeTime: DateTime(2020, 1, 1, 0, 3).millisecond,
             comments: <CommentModel>[],
             expanded: false,
             parentPositions: [0]),
       ]),
-      CommentListModel( [
+      CommentListModel([
         0,
         01
       ], [
@@ -197,7 +197,7 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 3,
             avatar: '',
             userName: 'duc3',
-            content: 'abc',
+            content: 'abc0-01-011',
             isRoot: false,
             activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
             comments: <CommentModel>[],
@@ -208,13 +208,111 @@ class CommentMockDataSource extends CommentMockRepository {
             userId: 1,
             avatar: '',
             userName: 'duc1',
-            content: 'abc',
+            content: 'abc0-01-012',
             isRoot: false,
             activeTime: DateTime(2020, 1, 1, 0, 3).millisecond,
             comments: <CommentModel>[],
             expanded: false,
             parentPositions: [0, 0]),
+      ]),
+      CommentListModel([
+        0,
+        03
+      ], [
+        CommentModel(
+            id: 031,
+            userId: 3,
+            avatar: '',
+            userName: 'duc3',
+            content: 'abc0-03-031',
+            isRoot: false,
+            activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
+            comments: <CommentModel>[],
+            expanded: false,
+            parentPositions: [0, 0]),
+        CommentModel(
+            id: 032,
+            userId: 1,
+            avatar: '',
+            userName: 'duc1',
+            content: 'abc0-03-032',
+            isRoot: false,
+            activeTime: DateTime(2020, 1, 1, 0, 3).millisecond,
+            comments: <CommentModel>[],
+            expanded: false,
+            parentPositions: [0, 0]),
+        CommentModel(
+            id: 034,
+            userId: 4,
+            avatar: '',
+            userName: 'duc4',
+            content: 'abc0-03-034',
+            isRoot: false,
+            activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
+            comments: <CommentModel>[],
+            expanded: false,
+            parentPositions: [0, 0]),
+        CommentModel(
+            id: 033,
+            userId: 3,
+            avatar: '',
+            userName: 'duc3',
+            content: 'abc0-03-033',
+            isRoot: false,
+            activeTime: DateTime(2020, 1, 1, 0, 3).millisecond,
+            comments: <CommentModel>[],
+            expanded: false,
+            parentPositions: [0, 0]),
+      ]),
+      CommentListModel([
+        0,
+        03,
+        032
+      ], [
+        CommentModel(
+            id: 0321,
+            userId: 3,
+            avatar: '',
+            userName: 'duc3',
+            content: 'abc0-03-032-0321',
+            isRoot: false,
+            activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
+            comments: <CommentModel>[],
+            expanded: false,
+            parentPositions: [0, 0]),
+        CommentModel(
+            id: 0322,
+            userId: 4,
+            avatar: '',
+            userName: 'duc4',
+            content: 'abc0-03-032-0322',
+            isRoot: false,
+            activeTime: DateTime(2020, 1, 1, 0, 4).millisecond,
+            comments: <CommentModel>[],
+            expanded: false,
+            parentPositions: [0, 0]),
       ])
     ];
+  }
+
+  @override
+  Future<List<CommentModel>> getMainComment(int pageIndex) async {
+    List<CommentModel> datas = [];
+    for (var i = 0; i < 20 ; i++) {
+      datas.add(CommentModel.fakeId(i + 20*pageIndex));
+    }
+    return Future.delayed(
+        const Duration(milliseconds: 500),
+            () => datas
+    );
+  }
+
+  @override
+  List<CommentModel> getSubComment(int pageIndex) {
+    List<CommentModel> datas = [];
+    for (var i = 0; i < 20 ; i++) {
+      datas.add(CommentModel.fakeId(i + pageIndex));
+    }
+    return datas;
   }
 }

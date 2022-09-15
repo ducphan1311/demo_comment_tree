@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tips_and_tricks_flutter">
-   <application
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application
         android:label="tips_and_tricks_flutter"
         android:icon="@mipmap/ic_launcher">
         <activity

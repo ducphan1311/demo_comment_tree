@@ -1,89 +1,94 @@
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:tips_and_tricks_flutter/domain/models/comment_list_model.dart';
+import 'package:flutter_stream_paging/fl_stream_paging.dart';
+import 'package:tips_and_tricks_flutter/data/data_sources/comment_datasource.dart';
+import 'package:tips_and_tricks_flutter/data/data_sources/mock/comment_mock_data_source.dart';
+import 'package:tips_and_tricks_flutter/data/repositories/comment/comment_mock_repository.dart';
 import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
 
-class TreeNode2 extends StatefulWidget {
-  const TreeNode2({
+class TreeNode3 extends StatefulWidget {
+  const TreeNode3({
     Key? key,
-    required this.commentLists,
-    required this.comments,
     required this.data,
-    required this.currentCommentListData,
-    required this.parentCommentListData,
     required this.offsetLeft,
     required this.onTap,
     required this.onExpand,
     required this.onCollapse,
-    required this.onReply,
   }) : super(key: key);
-
-  final List<CommentListModel> commentLists;
-  final List<CommentModel> comments;
   final CommentModel data;
-  final CommentListModel? currentCommentListData;
-  final CommentListModel parentCommentListData;
   final double offsetLeft;
   final Function(CommentModel node) onTap;
   final void Function(CommentModel node) onExpand;
   final void Function(CommentModel node) onCollapse;
-  final void Function(CommentListModel parentCommentList, CommentModel comment) onReply;
 
   @override
-  _TreeNode2State createState() => _TreeNode2State();
+  _TreeNode3State createState() => _TreeNode3State();
 }
 
-class _TreeNode2State extends State<TreeNode2>
+class _TreeNode3State extends State<TreeNode3>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
   late AnimationController _rotationController;
   final Tween<double> _turnsTween = Tween<double>(begin: -0.25, end: 0.0);
+  final CommentMockRepository commentRepo = CommentMockDataSource();
+  late List<CommentModel> comments;
+  CommentDataSource? commentDataSource;
 
-  List<Widget> _geneTreeNodes() {
+  //
+  List<TreeNode3> _geneTreeNodes() {
     return _isExpanded
         ? List.generate(
-            widget.comments.length,
-            (int index) {
-              CommentListModel? commentListData;
-              if (widget.currentCommentListData != null) {
-                commentListData = widget.commentLists.firstWhereOrNull((element) =>
-                    element.parentIds.equals(<int>[...widget.currentCommentListData!.parentIds, widget.currentCommentListData!.comments[index].id])
-                );
-                return TreeNode2(
-                  key: ValueKey(widget.currentCommentListData!.comments[index].id),
-                  commentLists: widget.commentLists,
-                  comments: commentListData != null ? commentListData.comments : [],
-                  data: widget.comments[index],
-                  currentCommentListData: commentListData,
-                  parentCommentListData: widget.currentCommentListData!,
-                  offsetLeft: widget.offsetLeft,
-                  onTap: widget.onTap,
-                  onExpand: widget.onExpand,
-                  onCollapse: widget.onCollapse,
-                  onReply: widget.onReply,
-                );
-              } else {
-                return Container();
-              }
-
-            })
+        comments.length,
+            (int index) => TreeNode3(
+          key: UniqueKey(),
+          data: comments[index],
+          offsetLeft: widget.offsetLeft,
+          onTap: widget.onTap,
+          onExpand: widget.onExpand,
+          onCollapse: widget.onCollapse,
+        ))
         : [];
   }
+
+  // Widget _geneTreeNodes() {
+  //   if (commentDataSource != null) {
+  //     return PagingListView<int, CommentModel>.separated(
+  //       builderDelegate: PagedChildBuilderDelegate<CommentModel>(itemBuilder: (context, data, child) {
+  //         return TreeNode3(
+  //           key: UniqueKey(),
+  //           data: data,
+  //           offsetLeft: widget.offsetLeft,
+  //           onTap: widget.onTap,
+  //           onExpand: widget.onExpand,
+  //           onCollapse: widget.onCollapse,
+  //         );
+  //       },),
+  //       pageDataSource: commentDataSource!,
+  //       separatorBuilder: (_, index) => const SizedBox(height: 20,),
+  //       errorBuilder: (_, err) => const SizedBox(),
+  //       shrinkWrap: true,
+  //       physics: NeverScrollableScrollPhysics(),
+  //       invisibleItemsThreshold: 0,
+  //     );
+  //   } else {
+  //     return Container();
+  //   }
+  // }
 
   @override
   initState() {
     super.initState();
+    comments = [];
     _isExpanded = widget.data.expanded;
     _rotationController = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this,
     )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          widget.onExpand(widget.data);
-        } else if (status == AnimationStatus.reverse) {
-          widget.onCollapse(widget.data);
-        }
-      });
+      if (status == AnimationStatus.completed) {
+        widget.onExpand(widget.data);
+      } else if (status == AnimationStatus.reverse) {
+        widget.onCollapse(widget.data);
+      }
+    });
     if (_isExpanded) {
       _rotationController.forward();
     }
@@ -102,9 +107,11 @@ class _TreeNode2State extends State<TreeNode2>
       children: [
         GestureDetector(
           onTap: () {
-            if (widget.comments.isNotEmpty) {
+            if (widget.data.childAmount > 0) {
               _isExpanded = !_isExpanded;
               if (_isExpanded) {
+                comments = commentRepo.getSubComment(0);
+                // commentDataSource = CommentDataSource(commentRepo);
                 _rotationController.forward();
               } else {
                 _rotationController.reverse();
@@ -137,11 +144,11 @@ class _TreeNode2State extends State<TreeNode2>
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                widget.comments.isNotEmpty
+                widget.data.childAmount > 0
                     ? RotationTransition(
-                        child: Icon(Icons.ac_unit),
-                        turns: _turnsTween.animate(_rotationController),
-                      )
+                  child: Icon(Icons.ac_unit),
+                  turns: _turnsTween.animate(_rotationController),
+                )
                     : const SizedBox(width: 16, height: 16),
                 // BlocBuilder<StoreCameraWindowBloc,
                 //     StoreCameraWindowState>(builder: (context, state) {
@@ -163,12 +170,12 @@ class _TreeNode2State extends State<TreeNode2>
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
-                        child:
-                            Text(widget.data.userName ?? 'not found user name'),
+                        child: Text(widget.data.userName??'not found user name'),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                          padding:
+                          const EdgeInsets.symmetric(horizontal: 6.0),
                           child: Text(
                             widget.data.content ?? 'not found content',
                             maxLines: 1,
@@ -177,13 +184,6 @@ class _TreeNode2State extends State<TreeNode2>
                           ),
                         ),
                       ),
-                      Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: InkWell(
-                        onTap: () {
-                          print('widget.parentCommentListData: ${widget.parentCommentListData.parentIds} ${widget.data.id}');
-                          widget.onReply(widget.parentCommentListData, widget.data);
-                        },
-                          child: Icon(Icons.reply)),),
                     ],
                   ),
                 ),
@@ -195,7 +195,9 @@ class _TreeNode2State extends State<TreeNode2>
           sizeFactor: _rotationController,
           child: Padding(
             padding: EdgeInsets.only(left: widget.offsetLeft),
-            child: Column(children: _geneTreeNodes()),
+            child: Column(
+              children: _geneTreeNodes(),
+            ),
           ),
         ),
       ],

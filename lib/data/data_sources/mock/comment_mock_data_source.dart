@@ -298,8 +298,8 @@ class CommentMockDataSource extends CommentMockRepository {
   @override
   Future<List<CommentModel>> getMainComment(int pageIndex) async {
     List<CommentModel> datas = [];
-    for (var i = 0; i < 20 ; i++) {
-      datas.add(CommentModel.fakeId(i + 20*pageIndex));
+    for (var i = 0; i < 40 ; i++) {
+      datas.add(CommentModel.fakeId(i + 40*pageIndex));
     }
     return Future.delayed(
         const Duration(milliseconds: 500),

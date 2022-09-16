@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/home/home_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_list_page.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_page.dart';
-import 'package:tips_and_tricks_flutter/presentation/pages/comment_page_3.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/comment_view.dart';
+import 'package:tips_and_tricks_flutter/presentation/pages/comment_page_m.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/home_page.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/web_view_page.dart';
 import 'package:tips_and_tricks_flutter/utils/navigator_support.dart';
@@ -39,9 +40,9 @@ class _MainNavigatorState extends State<MainNavigator> {
             case WebViewPage.path:
               return MaterialPageRoute(
                   builder: (context) => const WebViewPage());
-            case CommentPage3.path:
+            case CommentPageM.path:
               return MaterialPageRoute(
-                  builder: (context) => const CommentPage3());
+                  builder: (context) => const CommentPageM());
             default:
               return MaterialPageRoute(builder: (context) => Container());
           }

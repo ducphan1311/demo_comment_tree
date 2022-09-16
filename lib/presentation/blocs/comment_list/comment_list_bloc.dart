@@ -51,4 +51,10 @@ class CommentListBloc extends Cubit<CommentListState> {
       emit(CommentListStateData(newCommentLists));
     });
   }
+
+  // void updateExpanded({}) {
+  //   state.mapOrNull((value) {
+  //
+  //   });
+  // }
 }

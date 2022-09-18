@@ -1,3 +1,5 @@
+import 'package:tips_and_tricks_flutter/domain/models/user_model.dart';
+
 class CommentModel {
   // ignore: constant_identifier_names
   static const TAG = 'Comment';
@@ -8,7 +10,17 @@ class CommentModel {
   String? userName;
   String? content;
   bool isRoot;
-  int activeTime;
+  int createdAt;
+  int? deletedAt;
+  int? updatedAt;
+  int? likeCount;
+  int? reportCount;
+  List<UserModel>? userTag;
+  int? parentId;
+  int postId;
+  bool favourite;
+
+
   List<CommentModel> comments;
   bool expanded;
   List<int> parentPositions;
@@ -21,11 +33,19 @@ class CommentModel {
     required this.userName,
     required this.content,
     required this.isRoot,
-    required this.activeTime,
+    required this.createdAt,
+    this.deletedAt,
+    this.updatedAt,
+    this.likeCount,
+    this.reportCount,
+    this.userTag,
+    this.parentId,
+    this.postId = 0,
     required this.comments,
     required this.expanded,
     this.parentPositions = const <int>[],
     this.childAmount = 0,
+    this.favourite = false,
   });
 
   factory CommentModel.fakeId(int id) {
@@ -36,7 +56,7 @@ class CommentModel {
         userName: 'duc$id',
         content: 'abc$id',
         isRoot: false,
-        activeTime: DateTime.now().millisecondsSinceEpoch,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
         comments: [],
         expanded: false,
         childAmount: id % 3 == 0 ? 3 : 0);
@@ -62,7 +82,7 @@ class CommentModel {
           userName: userName ?? this.userName,
           content: content ?? this.content,
           isRoot: isRoot ?? this.isRoot,
-          activeTime: activeTime ?? this.activeTime,
+          createdAt: activeTime ?? this.createdAt,
           comments: comments ?? this.comments,
           expanded: expanded ?? this.expanded,
       childAmount: childAmount ?? this.childAmount);

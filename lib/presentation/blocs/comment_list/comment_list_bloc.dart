@@ -29,7 +29,7 @@ class CommentListBloc extends Cubit<CommentListState> {
         userName: user.name,
         content: content,
         isRoot: false,
-        activeTime: DateTime.now().millisecondsSinceEpoch,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
         comments: [],
         expanded: false);
     CommentListModel newChildCommentList;

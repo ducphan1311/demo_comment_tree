@@ -16,7 +16,6 @@ class CommentView<R extends CommentMockRepository> extends StatefulWidget {
     this.offsetLeft = 24,
     this.onExpand,
     this.onCollapse,
-    required this.onUpdate,
     required this.commentItemBuilder,
     this.isEnablePullToRefresh = true,
     this.padding = EdgeInsets.zero,
@@ -49,7 +48,6 @@ class CommentView<R extends CommentMockRepository> extends StatefulWidget {
   final double offsetLeft;
   final void Function(CommentModel node)? onExpand;
   final void Function(CommentModel node)? onCollapse;
-  final Function(CommentModel node) onUpdate;
   final CommentItemBuilder commentItemBuilder;
 
   final widgets.EdgeInsets padding;

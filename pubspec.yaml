@@ -29,6 +29,8 @@ dependencies:
   freezed_annotation: ^0.14.3
   # JsonParser
   json_annotation: ^4.4.0
+  #Svg Loader
+  flutter_svg:
 
   # Simple direct Service Locator
   get_it:
@@ -61,6 +63,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/images/
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

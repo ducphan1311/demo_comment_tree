@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tips_and_tricks_flutter/data/data_sources/comment_datasource.dart';
 import 'package:tips_and_tricks_flutter/data/data_sources/mock/comment_mock_data_source.dart';
+import 'package:tips_and_tricks_flutter/gen/assets.gen.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_view.dart';
 
 class CommentPageM extends StatefulWidget {
@@ -20,12 +22,13 @@ class _CommentPageMState extends State<CommentPageM> {
       ),
       body: SafeArea(
           child: CommentView(
-              onUpdate: (comment) {},
               commentItemBuilder: (_, comment, onShowDetail, onLongPress,
-                  turnsTween, rotationController) {
+                  turnsTween, rotationController, onUpdate) {
                 return GestureDetector(
                   onLongPress: () {},
-                  onTap: onShowDetail,
+                  onTap: (){
+                    print('onTap');
+                  },
                   child: Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(4.0),
@@ -38,7 +41,7 @@ class _CommentPageMState extends State<CommentPageM> {
                             width: 32,
                             height: 32,
                           ),
-                          backgroundColor: Colors.white,
+                          backgroundColor: Colors.black,
                           radius: 20,
                         ),
                         const SizedBox(width: 16,),
@@ -56,45 +59,34 @@ class _CommentPageMState extends State<CommentPageM> {
                             const SizedBox(height: 16,),
                             Row(
                               children: [
-                                Text('Reply'),
+                                InkWell(child: SvgPicture.asset(comment.favourite ? Assets.images.heartSelected : Assets.images.heart),
+                                onTap: (){
+                                  onUpdate(comment);
+                                },),
+                                const SizedBox(width: 6,),
+                                Text('3', style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 12),),
+                                const SizedBox(width: 24,),
+                                SvgPicture.asset(Assets.images.reply),
+                                const SizedBox(width: 6,),
+                                Text('Reply ', style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 12),)
                               ],
                             ),
                             const SizedBox(height: 12,),
-                            if (comment.childAmount > 0) RotationTransition(child: Container(),
-                              turns: turnsTween.animate(rotationController),
+
+                            if (comment.childAmount > 0) InkWell(
+                              onTap: onShowDetail,
+                              child: Row(
+                                children: [
+                                  RotationTransition(child: Icon(Icons.arrow_drop_down),
+                                    turns: turnsTween.animate(rotationController),
+                                  ),
+                                  const SizedBox(width: 6,),
+                                  Text('See comment', style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 12),),
+                                ],
+                              ),
                             )
                           ],
                         )),
-                        // comment.childAmount > 0
-                        //     ? RotationTransition(
-                        //         child: Icon(Icons.ac_unit),
-                        //         turns: turnsTween.animate(rotationController),
-                        //       )
-                        //     : const SizedBox(width: 16, height: 16),
-                        // Expanded(
-                        //   child: Row(
-                        //     children: [
-                        //       Padding(
-                        //         padding: const EdgeInsets.only(left: 8.0),
-                        //         child: Text(
-                        //             comment.userName ?? 'not found user name'),
-                        //       ),
-                        //       Expanded(
-                        //         child: Padding(
-                        //           padding: const EdgeInsets.symmetric(
-                        //               horizontal: 6.0),
-                        //           child: Text(
-                        //             comment.content ?? 'not found content',
-                        //             maxLines: 1,
-                        //             overflow: TextOverflow.ellipsis,
-                        //             style:
-                        //                 Theme.of(context).textTheme.subtitle1,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),

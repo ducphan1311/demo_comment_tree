@@ -13,6 +13,7 @@ typedef CommentItemBuilder = Widget Function(
   Function()? onLongPress,
   Tween<double> turnsTween,
   AnimationController rotationController,
+  Function(CommentModel comment) onUpdate,
 );
 
 class CommentTree<R extends CommentMockRepository> extends StatefulWidget {
@@ -235,7 +236,7 @@ class CommentTreeState<R extends CommentMockRepository>
             }
             setState(() {});
           }
-        }, () {}, _turnsTween, _rotationController),
+        }, () {}, _turnsTween, _rotationController, widget.onUpdate),
         SizeTransition(
           sizeFactor: _rotationController,
           child: Padding(

@@ -43,6 +43,7 @@ class CommentView<R extends CommentMockRepository> extends StatefulWidget {
     this.errorBuilder,
     this.refreshBuilder,
     required this.commentMockRepository,
+    this.addItemBuilder,
   }) : super(key: key);
 
   final double offsetLeft;
@@ -82,6 +83,7 @@ class CommentView<R extends CommentMockRepository> extends StatefulWidget {
   final ErrorBuilder? errorBuilder;
   final WidgetBuilder? refreshBuilder;
   final R commentMockRepository;
+  final AddItemWidgetBuilder? addItemBuilder;
 
   @override
   CommentViewState<R> createState() => CommentViewState<R>();
@@ -90,18 +92,20 @@ class CommentView<R extends CommentMockRepository> extends StatefulWidget {
 class CommentViewState<R extends CommentMockRepository> extends State<CommentView<R>> {
   late CommentBloc commentBloc;
   late CommentDataSource commentDataSource;
+  late TextEditingController controller;
 
   @override
   void initState() {
     super.initState();
     commentDataSource = CommentDataSource(widget.commentMockRepository);
+    controller = TextEditingController();
   }
 
   @override
   Widget build(BuildContext context) {
     return PagingListView<int, CommentModel>.separated(
       builderDelegate: PagedChildBuilderDelegate<CommentModel>(
-        itemBuilder: (context, data, child, onUpdate) {
+        itemBuilder: (context, data, child, onUpdate, onDelete) {
           return CommentTree<CommentMockRepository>(
             key: ValueKey(data.id),
             data: data,
@@ -109,6 +113,7 @@ class CommentViewState<R extends CommentMockRepository> extends State<CommentVie
             onExpand: widget.onExpand,
             onCollapse: widget.onCollapse,
             onUpdate: onUpdate,
+            onDelete: onDelete,
             commentItemBuilder: widget.commentItemBuilder,
             commentMockRepository: widget.commentMockRepository,
             isEnablePullToRefresh: widget.isEnablePullToRefresh,
@@ -164,6 +169,7 @@ class CommentViewState<R extends CommentMockRepository> extends State<CommentVie
       emptyBuilder: widget.emptyBuilder,
       loadingBuilder: widget.loadingBuilder,
       refreshBuilder: widget.refreshBuilder,
+      addItemBuilder: widget.addItemBuilder,
     );
   }
 }

@@ -12,6 +12,12 @@ import 'package:flutter/widgets.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/Flag.svg
+  String get flag => 'assets/images/Flag.svg';
+
+  /// File path: assets/images/copy.svg
+  String get copy => 'assets/images/copy.svg';
+
   /// File path: assets/images/heart.svg
   String get heart => 'assets/images/heart.svg';
 
@@ -40,7 +46,7 @@ class AssetGenImage {
     ImageErrorWidgetBuilder? errorBuilder,
     String? semanticLabel,
     bool excludeFromSemantics = false,
-    double? scale = 1.0,
+    double? scale,
     double? width,
     double? height,
     Color? color,
@@ -87,4 +93,6 @@ class AssetGenImage {
   }
 
   String get path => _assetName;
+
+  String get keyName => _assetName;
 }

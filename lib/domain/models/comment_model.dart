@@ -20,7 +20,6 @@ class CommentModel {
   int postId;
   bool favourite;
 
-
   List<CommentModel> comments;
   bool expanded;
   List<int> parentPositions;
@@ -74,6 +73,14 @@ class CommentModel {
     bool? expanded,
     List<int>? parentPositions,
     int? childAmount,
+    int? deletedAt,
+    int? updatedAt,
+    int? likeCount,
+    int? reportCount,
+    List<UserModel>? userTag,
+    int? parentId,
+    int? postId,
+    bool? favourite,
   }) =>
       CommentModel(
           id: id ?? this.id,
@@ -83,7 +90,15 @@ class CommentModel {
           content: content ?? this.content,
           isRoot: isRoot ?? this.isRoot,
           createdAt: activeTime ?? this.createdAt,
+          deletedAt: deletedAt ?? this.deletedAt,
+          updatedAt: updatedAt ?? this.updatedAt,
+          likeCount: likeCount ?? this.likeCount,
+          reportCount: reportCount ?? this.reportCount,
+          userTag: userTag ?? this.userTag,
+          parentId: parentId ?? this.parentId,
+          postId: postId ?? this.postId,
+          favourite: favourite ?? this.favourite,
           comments: comments ?? this.comments,
           expanded: expanded ?? this.expanded,
-      childAmount: childAmount ?? this.childAmount);
+          childAmount: childAmount ?? this.childAmount);
 }

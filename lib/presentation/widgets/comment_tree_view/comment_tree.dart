@@ -14,6 +14,7 @@ typedef CommentItemBuilder = Widget Function(
   Tween<double> turnsTween,
   AnimationController rotationController,
   Function(CommentModel comment) onUpdate,
+  Function() onDelete,
 );
 
 class CommentTree<R extends CommentMockRepository> extends StatefulWidget {
@@ -24,6 +25,7 @@ class CommentTree<R extends CommentMockRepository> extends StatefulWidget {
     this.onExpand,
     this.onCollapse,
     required this.onUpdate,
+    required this.onDelete,
     required this.commentItemBuilder,
     this.isEnablePullToRefresh = true,
     this.padding = EdgeInsets.zero,
@@ -57,6 +59,7 @@ class CommentTree<R extends CommentMockRepository> extends StatefulWidget {
   final void Function(CommentModel node)? onExpand;
   final void Function(CommentModel node)? onCollapse;
   final Function(CommentModel node) onUpdate;
+  final Function() onDelete;
   final CommentItemBuilder commentItemBuilder;
 
   final widgets.EdgeInsets padding;
@@ -113,7 +116,7 @@ class CommentTreeState<R extends CommentMockRepository>
     if (commentDataSource != null) {
       return PagingListView<int, CommentModel>.separated(
         builderDelegate: PagedChildBuilderDelegate<CommentModel>(
-          itemBuilder: (context, data, child, onUpdate) {
+          itemBuilder: (context, data, child, onUpdate, onDelete) {
             return CommentTree(
               key: ValueKey(data.id),
               data: data,
@@ -121,6 +124,7 @@ class CommentTreeState<R extends CommentMockRepository>
               onExpand: widget.onExpand,
               onCollapse: widget.onCollapse,
               onUpdate: onUpdate,
+              onDelete: onDelete,
               commentItemBuilder: widget.commentItemBuilder,
               isEnablePullToRefresh: widget.isEnablePullToRefresh,
               padding: widget.padding,
@@ -215,6 +219,7 @@ class CommentTreeState<R extends CommentMockRepository>
   @override
   void dispose() {
     _rotationController.dispose();
+    commentMockRepository.getMainComment(0).then((value) => null);
     super.dispose();
   }
 
@@ -223,6 +228,7 @@ class CommentTreeState<R extends CommentMockRepository>
     super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         widget.commentItemBuilder(context, widget.data, () {
           if (widget.data.childAmount > 0) {
@@ -236,12 +242,12 @@ class CommentTreeState<R extends CommentMockRepository>
             }
             setState(() {});
           }
-        }, () {}, _turnsTween, _rotationController, widget.onUpdate),
+        }, () {}, _turnsTween, _rotationController, widget.onUpdate, widget.onDelete),
         SizeTransition(
           sizeFactor: _rotationController,
           child: Padding(
             padding: EdgeInsets.only(left: widget.offsetLeft),
-            child: _geneTreeNodes(),
+            child: _geneTreeNodes(), //column [expanded[custom scrollview] -> addItemBuilder]
           ),
         ),
       ],

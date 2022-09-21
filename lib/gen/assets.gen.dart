@@ -18,6 +18,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/copy.svg
   String get copy => 'assets/images/copy.svg';
 
+  /// File path: assets/images/edit.svg
+  String get edit => 'assets/images/edit.svg';
+
   /// File path: assets/images/heart.svg
   String get heart => 'assets/images/heart.svg';
 
@@ -26,6 +29,9 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/reply.svg
   String get reply => 'assets/images/reply.svg';
+
+  /// File path: assets/images/trash.svg
+  String get trash => 'assets/images/trash.svg';
 }
 
 class Assets {

@@ -210,10 +210,17 @@ class CommentTreeState<R extends CommentMockRepository>
           }
         }
       });
+    commentMockRepository = widget.commentMockRepository;
+
+    print('check init: ${widget.data.id} -- $_isExpanded');
     if (_isExpanded) {
+      if (mounted) {
+        commentDataSource = CommentDataSource(commentMockRepository,
+            userId: widget.data.id);
+      }
+
       _rotationController.forward();
     }
-    commentMockRepository = widget.commentMockRepository;
   }
 
   @override
@@ -233,6 +240,9 @@ class CommentTreeState<R extends CommentMockRepository>
         widget.commentItemBuilder(context, widget.data, () {
           if (widget.data.childAmount > 0) {
             _isExpanded = !_isExpanded;
+            var newComment = widget.data.copyWith(expanded: _isExpanded);
+            widget.onUpdate(newComment);
+            print('check build: ${widget.data.id} -- $_isExpanded');
             if (_isExpanded) {
               commentDataSource = CommentDataSource(commentMockRepository,
                   userId: widget.data.id);

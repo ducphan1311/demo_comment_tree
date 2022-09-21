@@ -1,24 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
+import 'package:tips_and_tricks_flutter/domain/models/user_model.dart';
 import 'package:tips_and_tricks_flutter/gen/assets.gen.dart';
+import 'package:tips_and_tricks_flutter/utils/cache.dart';
 
 class CommentOverlay extends StatefulWidget {
   static const path = '/comment_overlay';
   const CommentOverlay(
       {Key? key,
       required this.offset,
-      required this.onCloseOverlay, required this.comment})
+      required this.onCloseOverlay,
+      required this.comment,
+        this.onEdit, this.onCopy, this.onReply, this.onShare, this.onReport, this.onDelete})
       : super(key: key);
   final Offset offset;
   final Function()? onCloseOverlay;
   final CommentModel comment;
+  final Function()? onEdit;
+  final Function()? onCopy;
+  final Function()? onReply;
+  final Function()? onShare;
+  final Function()? onReport;
+  final Function()? onDelete;
 
   @override
   State<CommentOverlay> createState() => _CommentOverlayState();
 }
 
 class _CommentOverlayState extends State<CommentOverlay> {
+  final UserModel _user = Cache.userModel;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,12 +43,12 @@ class _CommentOverlayState extends State<CommentOverlay> {
             child: Container(
               width: double.infinity,
               height: double.infinity,
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.transparent,
             ),
           ),
           Positioned.fill(
               left: widget.offset.dx,
-              top: widget.offset.dy - 8,
+              top: widget.offset.dy,
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Column(
@@ -45,8 +57,8 @@ class _CommentOverlayState extends State<CommentOverlay> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16.0),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
-
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
                         color: Color(0xff1e212c),
                       ),
                       child: Row(
@@ -65,80 +77,83 @@ class _CommentOverlayState extends State<CommentOverlay> {
                           ),
                           Expanded(
                               child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            widget.comment.userName ?? '',
-                                            style: Theme.of(context).textTheme.bodyText2,
-                                          ),
-                                          const SizedBox(
-                                            width: 8,
-                                          ),
-                                          Expanded(
-                                              child: Text(
-                                                '5 days ago',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2!
-                                                    .copyWith(fontSize: 10),
-                                              )),
-                                        ],
+                                      Text(
+                                        widget.comment.userName ?? '',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
                                       ),
                                       const SizedBox(
-                                        height: 10,
+                                        width: 8,
                                       ),
-                                      Text(
-                                        widget.comment.content ?? '',
-                                        style: Theme.of(context).textTheme.caption,
-                                      ),
+                                      Expanded(
+                                          child: Text(
+                                        '5 days ago',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2!
+                                            .copyWith(fontSize: 10),
+                                      )),
                                     ],
                                   ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    widget.comment.content ?? '',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
                                 ],
-                              )),
+                              ),
+                            ],
+                          )),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8,),
+                    const SizedBox(
+                      height: 8,
+                    ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Color(0xff1e212c),
-                              borderRadius: BorderRadius.circular(48)
+                          if (_user.id == widget.comment.id)
+                            Row(
+                              children: [
+                                _buttonWidget(Assets.images.edit, widget.onEdit),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                              ],
                             ),
-                            child: Center(child: SvgPicture.asset(Assets.images.copy),),
+                          _buttonWidget(Assets.images.copy, widget.onCopy),
+                          const SizedBox(
+                            width: 16,
                           ),
-                          const SizedBox(width: 16,),
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                                color: Color(0xff1e212c),
-                                borderRadius: BorderRadius.circular(48)
+                          _buttonWidget(Assets.images.reply, widget.onReply),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          if (_user.id != widget.comment.id)
+                            Row(
+                              children: [
+                                _buttonWidget(Assets.images.flag, widget.onReport),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                              ],
                             ),
-                            child: Center(child: SvgPicture.asset(Assets.images.reply),),
-                          ),
-                          const SizedBox(width: 16,),
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                                color: Color(0xff1e212c),
-                                borderRadius: BorderRadius.circular(48)
-                            ),
-                            child: Center(child: SvgPicture.asset(Assets.images.flag),),
-                          ),
+                          if (_user.id == widget.comment.id)
+                            _buttonWidget(Assets.images.trash, widget.onDelete),
                         ],
                       ),
                     )
@@ -146,6 +161,25 @@ class _CommentOverlayState extends State<CommentOverlay> {
                 ),
               ))
         ],
+      ),
+    );
+  }
+
+  Widget _buttonWidget(String icon, Function()? onTap) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+          color: Color(0xff1e212c), borderRadius: BorderRadius.circular(48)),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(48),
+          onTap: onTap,
+          child: Center(
+            child: SvgPicture.asset(icon),
+          ),
+        ),
       ),
     );
   }

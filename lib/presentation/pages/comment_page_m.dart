@@ -5,6 +5,7 @@ import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
 import 'package:tips_and_tricks_flutter/gen/assets.gen.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_view.dart';
 import 'package:tips_and_tricks_flutter/presentation/widgets/comment_overlay.dart';
+import 'package:tips_and_tricks_flutter/presentation/widgets/form/comment_text_form_field.dart';
 
 class CommentPageM extends StatefulWidget {
   static const path = '/comment_page_m';
@@ -18,6 +19,9 @@ class _CommentPageMState extends State<CommentPageM> {
   bool _showOverLay = false;
   var _offset = Offset(0, 0);
   late CommentModel _comment;
+  TextEditingController controller = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -191,8 +195,9 @@ class _CommentPageMState extends State<CommentPageM> {
                             ),
                           ),
                           Divider(
+                            height: 0,
                             thickness: 1,
-                            color: Colors.grey,
+                            color: Color(0xff4a5568),
                           ),
                         ],
                       ),
@@ -201,13 +206,18 @@ class _CommentPageMState extends State<CommentPageM> {
                 },
                 commentMockRepository: CommentMockDataSource(),
                 addItemBuilder: (context, onAddItem) {
-                  return Row(
-                    children: [
-                      Expanded(child: TextFormField(
-
-                      )),
-                      ElevatedButton(
-                          onPressed: () {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(child: CommentTextFormField(
+                          textEditingController: controller,
+                          hint: 'Use \$ to mention a stock, @ to mention ',
+                        )),
+                        const SizedBox(width: 16,),
+                        InkResponse(
+                          radius: 24,
+                          onTap: (){
                             var id = DateTime.now().hashCode;
                             var newData = CommentModel(
                                 id: id,
@@ -222,8 +232,10 @@ class _CommentPageMState extends State<CommentPageM> {
                                 childAmount: id % 3 == 0 ? 3 : 0);
                             onAddItem(newData);
                           },
-                          child: const Text('add')),
-                    ],
+                          child: SvgPicture.asset(Assets.images.send),
+                        ),
+                      ],
+                    ),
                   );
                 },
               )),

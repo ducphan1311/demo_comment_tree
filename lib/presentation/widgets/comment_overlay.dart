@@ -48,7 +48,7 @@ class _CommentOverlayState extends State<CommentOverlay> {
           ),
           Positioned.fill(
               left: widget.offset.dx,
-              top: widget.offset.dy,
+              top: widget.offset.dy + 8,
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Column(
@@ -69,7 +69,7 @@ class _CommentOverlayState extends State<CommentOverlay> {
                               width: 32,
                               height: 32,
                             ),
-                            backgroundColor: Colors.black,
+                            backgroundColor: Colors.white,
                             radius: 20,
                           ),
                           const SizedBox(
@@ -110,7 +110,7 @@ class _CommentOverlayState extends State<CommentOverlay> {
                                   ),
                                   Text(
                                     widget.comment.content ?? '',
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 12),
                                   ),
                                 ],
                               ),

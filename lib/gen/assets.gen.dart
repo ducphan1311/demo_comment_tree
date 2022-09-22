@@ -30,6 +30,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/reply.svg
   String get reply => 'assets/images/reply.svg';
 
+  /// File path: assets/images/send.svg
+  String get send => 'assets/images/send.svg';
+
   /// File path: assets/images/trash.svg
   String get trash => 'assets/images/trash.svg';
 }

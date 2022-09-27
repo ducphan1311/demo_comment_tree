@@ -1,10 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stream_paging/fl_stream_paging.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:tips_and_tricks_flutter/data/data_sources/comment_datasource.dart';
 import 'package:tips_and_tricks_flutter/data/repositories/comment/comment_mock_repository.dart';
 import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
 import 'package:flutter/widgets.dart' as widgets;
+
+import '../../../gen/assets.gen.dart';
+import '../form/comment_text_form_field.dart';
 
 typedef CommentItemBuilder = Widget Function(
   BuildContext context,
@@ -111,6 +115,7 @@ class CommentTreeState<R extends CommentMockRepository>
   final Tween<double> _turnsTween = Tween<double>(begin: -0.25, end: 0.0);
   late R commentMockRepository;
   CommentDataSource? commentDataSource;
+  TextEditingController controller = TextEditingController();
 
   Widget _geneTreeNodes() {
     if (commentDataSource != null) {
@@ -162,9 +167,9 @@ class CommentTreeState<R extends CommentMockRepository>
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         invisibleItemsThreshold: 0,
-        newPageProgressIndicatorBuilder: (_, onPressed) {
-          return ElevatedButton(onPressed: onPressed, child: Text('load more'));
-        },
+        // newPageProgressIndicatorBuilder: (_, onPressed) {
+        //   return ElevatedButton(onPressed: onPressed, child: Text('load more'));
+        // },
         isEnablePullToRefresh: widget.isEnablePullToRefresh,
         padding: widget.padding,
         separatorBuilder: widget.separatorBuilder ?? (_, i) => SizedBox(),
@@ -186,6 +191,43 @@ class CommentTreeState<R extends CommentMockRepository>
         emptyBuilder: widget.emptyBuilder,
         loadingBuilder: widget.loadingBuilder,
         refreshBuilder: widget.refreshBuilder,
+        addItemBuilder: (context, onAddItem) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                    child: CommentTextFormField(
+                      textEditingController: controller,
+                      hint: 'Use \$ to mention a stock, @ to mention ',
+                    )),
+                const SizedBox(
+                  width: 16,
+                ),
+                InkResponse(
+                  radius: 24,
+                  onTap: () {
+                    var id = DateTime.now().hashCode;
+                    var newData = CommentModel(
+                        id: id,
+                        userId: id,
+                        avatar: 'avatar',
+                        userName: 'duc$id',
+                        content: 'abc$id',
+                        isRoot: false,
+                        createdAt: DateTime.now().millisecondsSinceEpoch,
+                        comments: [],
+                        expanded: false,
+                        childAmount: id % 3 == 0 ? 3 : 0);
+                    onAddItem(newData);
+                  },
+                  child: SvgPicture.asset(Assets.images.send),
+                ),
+              ],
+            ),
+          );
+        },
+        //onAddItemToList()
       );
     } else {
       return Container();

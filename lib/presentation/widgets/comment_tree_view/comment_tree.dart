@@ -1,18 +1,23 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stream_paging/fl_stream_paging.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tips_and_tricks_flutter/data/data_sources/comment_datasource.dart';
 import 'package:tips_and_tricks_flutter/data/repositories/comment/comment_mock_repository.dart';
 import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
 import 'package:flutter/widgets.dart' as widgets;
+import 'package:tips_and_tricks_flutter/presentation/blocs/comment_m/comment_m_bloc.dart';
+import 'package:tips_and_tricks_flutter/presentation/blocs/comment_m/comment_m_state.dart';
 
+import '../../../domain/models/request_update_model.dart';
 import '../../../gen/assets.gen.dart';
+import '../../../paging/fl_stream_paging.dart';
 import '../form/comment_text_form_field.dart';
 
 typedef CommentItemBuilder = Widget Function(
   BuildContext context,
   CommentModel comment,
+  int index,
   Function() onShowDetail,
   Function()? onLongPress,
   Tween<double> turnsTween,
@@ -57,6 +62,7 @@ class CommentTree<R extends CommentMockRepository> extends StatefulWidget {
     this.errorBuilder,
     this.refreshBuilder,
     required this.commentMockRepository,
+    required this.currentIndex,
   }) : super(key: key);
   final CommentModel data;
   final double offsetLeft;
@@ -98,6 +104,7 @@ class CommentTree<R extends CommentMockRepository> extends StatefulWidget {
   final ErrorBuilder? errorBuilder;
   final WidgetBuilder? refreshBuilder;
   final R commentMockRepository;
+  final int currentIndex;
 
   @override
   CommentTreeState<R> createState() => CommentTreeState<R>();
@@ -121,10 +128,11 @@ class CommentTreeState<R extends CommentMockRepository>
     if (commentDataSource != null) {
       return PagingListView<int, CommentModel>.separated(
         builderDelegate: PagedChildBuilderDelegate<CommentModel>(
-          itemBuilder: (context, data, child, onUpdate, onDelete) {
+          itemBuilder: (context, data, index, onUpdate, onDelete) {
             return CommentTree(
               key: ValueKey(data.id),
               data: data,
+              currentIndex: index,
               offsetLeft: widget.offsetLeft,
               onExpand: widget.onExpand,
               onCollapse: widget.onCollapse,
@@ -167,9 +175,9 @@ class CommentTreeState<R extends CommentMockRepository>
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         invisibleItemsThreshold: 0,
-        // newPageProgressIndicatorBuilder: (_, onPressed) {
-        //   return ElevatedButton(onPressed: onPressed, child: Text('load more'));
-        // },
+        newPageProgressIndicatorBuilder: (_, onPressed) {
+          return ElevatedButton(onPressed: onPressed, child: Text('load more'));
+        },
         isEnablePullToRefresh: widget.isEnablePullToRefresh,
         padding: widget.padding,
         separatorBuilder: widget.separatorBuilder ?? (_, i) => SizedBox(),
@@ -191,42 +199,43 @@ class CommentTreeState<R extends CommentMockRepository>
         emptyBuilder: widget.emptyBuilder,
         loadingBuilder: widget.loadingBuilder,
         refreshBuilder: widget.refreshBuilder,
-        addItemBuilder: (context, onAddItem) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                    child: CommentTextFormField(
-                      textEditingController: controller,
-                      hint: 'Use \$ to mention a stock, @ to mention ',
-                    )),
-                const SizedBox(
-                  width: 16,
-                ),
-                InkResponse(
-                  radius: 24,
-                  onTap: () {
-                    var id = DateTime.now().hashCode;
-                    var newData = CommentModel(
-                        id: id,
-                        userId: id,
-                        avatar: 'avatar',
-                        userName: 'duc$id',
-                        content: 'abc$id',
-                        isRoot: false,
-                        createdAt: DateTime.now().millisecondsSinceEpoch,
-                        comments: [],
-                        expanded: false,
-                        childAmount: id % 3 == 0 ? 3 : 0);
-                    onAddItem(newData);
-                  },
-                  child: SvgPicture.asset(Assets.images.send),
-                ),
-              ],
-            ),
-          );
-        },
+        parentId: widget.data.id,
+        // addItemBuilder: (context, onAddItem) {
+        //   return Padding(
+        //     padding: EdgeInsets.symmetric(horizontal: 16),
+        //     child: Row(
+        //       children: [
+        //         Expanded(
+        //             child: CommentTextFormField(
+        //               textEditingController: controller,
+        //               hint: 'Use \$ to mention a stock, @ to mention ',
+        //             )),
+        //         const SizedBox(
+        //           width: 16,
+        //         ),
+        //         InkResponse(
+        //           radius: 24,
+        //           onTap: () {
+        //             var id = DateTime.now().hashCode;
+        //             var newData = CommentModel(
+        //                 id: id,
+        //                 userId: id,
+        //                 avatar: 'avatar',
+        //                 userName: 'duc$id',
+        //                 content: 'abc$id',
+        //                 isRoot: false,
+        //                 createdAt: DateTime.now().millisecondsSinceEpoch,
+        //                 comments: [],
+        //                 expanded: false,
+        //                 childAmount: id % 3 == 0 ? 3 : 0);
+        //             onAddItem(newData);
+        //           },
+        //           child: SvgPicture.asset(Assets.images.send),
+        //         ),
+        //       ],
+        //     ),
+        //   );
+        // },
         //onAddItemToList()
       );
     } else {
@@ -257,8 +266,8 @@ class CommentTreeState<R extends CommentMockRepository>
     print('check init: ${widget.data.id} -- $_isExpanded');
     if (_isExpanded) {
       if (mounted) {
-        commentDataSource = CommentDataSource(commentMockRepository,
-            userId: widget.data.id);
+        commentDataSource =
+            CommentDataSource(commentMockRepository, userId: widget.data.id);
       }
 
       _rotationController.forward();
@@ -275,34 +284,58 @@ class CommentTreeState<R extends CommentMockRepository>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        widget.commentItemBuilder(context, widget.data, () {
-          if (widget.data.childAmount > 0) {
-            _isExpanded = !_isExpanded;
-            var newComment = widget.data.copyWith(expanded: _isExpanded);
-            widget.onUpdate(newComment);
-            print('check build: ${widget.data.id} -- $_isExpanded');
-            if (_isExpanded) {
-              commentDataSource = CommentDataSource(commentMockRepository,
-                  userId: widget.data.id);
-              _rotationController.forward();
-            } else {
-              _rotationController.reverse();
-            }
-            setState(() {});
+    return BlocListener<CommentMBloc<CommentModel>,
+        CommentMState<CommentModel>>(
+      listener: (context, state) {
+        if (!_isExpanded) {
+          _isExpanded = !_isExpanded;
+          var newComment = widget.data.copyWith(expanded: _isExpanded, childAmount: widget.data.childAmount+=1);
+          widget.onUpdate(newComment);
+          if (_isExpanded) {
+            commentDataSource = CommentDataSource(commentMockRepository,
+                userId: widget.data.id);
+            _rotationController.forward();
+          } else {
+            _rotationController.reverse();
           }
-        }, () {}, _turnsTween, _rotationController, widget.onUpdate, widget.onDelete),
-        SizeTransition(
-          sizeFactor: _rotationController,
-          child: Padding(
-            padding: EdgeInsets.only(left: widget.offsetLeft),
-            child: _geneTreeNodes(), //column [expanded[custom scrollview] -> addItemBuilder]
+        }
+      },
+      listenWhen: (oldState, currState) {
+        return oldState != currState &&
+            currState.requestUpdate.status == UpdateStatus.UPDATE &&
+            currState.requestUpdate.updateParentId == widget.data.id;
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          widget.commentItemBuilder(context, widget.data, widget.currentIndex,
+              () {
+            if (widget.data.childAmount > 0) {
+              _isExpanded = !_isExpanded;
+              var newComment = widget.data.copyWith(expanded: _isExpanded);
+              widget.onUpdate(newComment);
+              if (_isExpanded) {
+                commentDataSource = CommentDataSource(commentMockRepository,
+                    userId: widget.data.id);
+                _rotationController.forward();
+              } else {
+                _rotationController.reverse();
+              }
+              setState(() {});
+            }
+          }, () {}, _turnsTween, _rotationController, widget.onUpdate,
+              widget.onDelete),
+          SizeTransition(
+            sizeFactor: _rotationController,
+            child: Padding(
+              padding: EdgeInsets.only(left: widget.offsetLeft),
+              child:
+                  _geneTreeNodes(), //column [expanded[custom scrollview] -> addItemBuilder]
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

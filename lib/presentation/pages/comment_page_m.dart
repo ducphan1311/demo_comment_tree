@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tips_and_tricks_flutter/data/data_sources/mock/comment_mock_data_source.dart';
 import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
+import 'package:tips_and_tricks_flutter/domain/models/request_update_model.dart';
 import 'package:tips_and_tricks_flutter/gen/assets.gen.dart';
+import 'package:tips_and_tricks_flutter/presentation/blocs/comment_m/comment_m_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/pages/comment_view.dart';
 import 'package:tips_and_tricks_flutter/presentation/widgets/comment_overlay.dart';
 import 'package:tips_and_tricks_flutter/presentation/widgets/form/comment_text_form_field.dart';
@@ -26,6 +29,26 @@ class _CommentPageMState extends State<CommentPageM> {
     print('typing: ${controller.text}');
   }
 
+  CommentModel? selectedComment;
+  int? selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(() {
+      if (!focusNode.hasFocus) {
+        selectedComment = null;
+        controller.clear();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -38,7 +61,7 @@ class _CommentPageMState extends State<CommentPageM> {
           body: SafeArea(
               child: CommentView(
             shrinkWrap: true,
-            commentItemBuilder: (_, comment, onShowDetail, onLongPress,
+            commentItemBuilder: (_, comment, index, onShowDetail, onLongPress,
                 turnsTween, rotationController, onUpdate, onDelete) {
               final _key = GlobalKey();
               return GestureDetector(
@@ -150,19 +173,17 @@ class _CommentPageMState extends State<CommentPageM> {
                                 ),
                                 InkWell(
                                   onTap: () {
+                                    setState(() {
+                                      selectedComment = comment;
+                                      selectedIndex = index;
+                                    });
                                     //funOnChange(item)
 
                                     // controller.removeListener(() {
                                     //   _onListener(onDelete);
                                     // });
-                                    focusNode.dispose();
-
                                     FocusScope.of(context)
                                         .requestFocus(focusNode);
-                                    focusNode.addListener(() {
-                                      print('type: ${controller.text}');
-                                    });
-
                                     // controller.addListener(() {
                                     //   _onListener(onDelete);
                                     // });
@@ -219,7 +240,7 @@ class _CommentPageMState extends State<CommentPageM> {
               );
             },
             commentMockRepository: CommentMockDataSource(),
-            addItemBuilder: (context, onAddItem) {
+            addItemBuilder: (context, onUpdate) {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -248,7 +269,16 @@ class _CommentPageMState extends State<CommentPageM> {
                             comments: [],
                             expanded: false,
                             childAmount: id % 3 == 0 ? 3 : 0);
-                        onAddItem(newData);
+                        if (selectedComment != null) {
+                          onUpdate(selectedComment!.copyWith(childAmount: selectedComment!.childAmount+=1), selectedIndex!);
+                        }
+                        context.read<CommentMBloc<CommentModel>>().update(
+                            RequestUpdateModel<CommentModel>(
+                                status: UpdateStatus.UPDATE,
+                                updateParentId: selectedComment?.id,
+                                comment: newData));
+
+                        // onAddItem(newData);
                       },
                       child: SvgPicture.asset(Assets.images.send),
                     ),

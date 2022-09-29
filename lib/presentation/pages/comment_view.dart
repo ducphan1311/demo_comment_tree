@@ -1,12 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stream_paging/fl_stream_paging.dart';
 import 'package:tips_and_tricks_flutter/data/data_sources/comment_datasource.dart';
 import 'package:tips_and_tricks_flutter/data/repositories/comment/comment_mock_repository.dart';
 import 'package:tips_and_tricks_flutter/domain/models/comment_model.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/comment/comment_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/widgets/comment_tree_view/comment_tree.dart';
 import 'package:flutter/widgets.dart' as widgets;
+
+import '../../paging/fl_stream_paging.dart';
 
 
 class CommentView<R extends CommentMockRepository> extends StatefulWidget {
@@ -83,7 +84,7 @@ class CommentView<R extends CommentMockRepository> extends StatefulWidget {
   final ErrorBuilder? errorBuilder;
   final WidgetBuilder? refreshBuilder;
   final R commentMockRepository;
-  final AddItemWidgetBuilder? addItemBuilder;
+  final AddItemWidgetBuilder<CommentModel>? addItemBuilder;
 
   @override
   CommentViewState<R> createState() => CommentViewState<R>();
@@ -105,10 +106,11 @@ class CommentViewState<R extends CommentMockRepository> extends State<CommentVie
   Widget build(BuildContext context) {
     return PagingListView<int, CommentModel>.separated(
       builderDelegate: PagedChildBuilderDelegate<CommentModel>(
-        itemBuilder: (context, data, child, onUpdate, onDelete) {
+        itemBuilder: (context, data, index, onUpdate, onDelete) {
           return CommentTree<CommentMockRepository>(
             key: ValueKey(data.id),
             data: data,
+            currentIndex: index,
             offsetLeft: widget.offsetLeft,
             onExpand: widget.onExpand,
             onCollapse: widget.onCollapse,

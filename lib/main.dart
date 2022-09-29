@@ -7,7 +7,10 @@ import 'package:tips_and_tricks_flutter/domain/models/user_model.dart';
 import 'package:tips_and_tricks_flutter/initialize_dependencies.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/auth/auth_bloc.dart';
 import 'package:tips_and_tricks_flutter/presentation/blocs/auth_navigation/auth_navigation_bloc.dart';
+import 'package:tips_and_tricks_flutter/presentation/blocs/comment_m/comment_m_bloc.dart';
 import 'package:tips_and_tricks_flutter/utils/cache.dart';
+
+import 'domain/models/comment_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +28,13 @@ void main() async {
       ),
       BlocProvider.value(
         value: GetIt.instance.get<AuthNavigationBloc>(),
+      ),
+      BlocProvider<CommentMBloc<CommentModel>>(
+        create: (context) {
+          var commentMBloc = CommentMBloc<CommentModel>(null);
+          GetIt.instance.registerSingleton(commentMBloc);
+          return commentMBloc;
+        },
       ),
     ],
     child: Application(),

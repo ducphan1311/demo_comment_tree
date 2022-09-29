@@ -251,13 +251,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.3.0"
-  flutter_stream_paging:
-    dependency: "direct main"
-    description:
-      name: flutter_stream_paging
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.8"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -596,7 +589,7 @@ packages:
     source: sdk
     version: "0.0.99"
   sliver_tools:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sliver_tools
       url: "https://pub.dartlang.org"
@@ -680,7 +673,7 @@ packages:
     source: hosted
     version: "1.0.0"
   tuple:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: tuple
       url: "https://pub.dartlang.org"
@@ -813,5 +806,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
+  dart: ">=2.17.0 <3.0.0"
   flutter: ">=3.0.0"

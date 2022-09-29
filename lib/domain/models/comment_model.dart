@@ -16,7 +16,6 @@ class CommentModel {
   int? likeCount;
   int? reportCount;
   List<UserModel>? userTag;
-  int? parentId;
   int postId;
   bool favourite;
 
@@ -38,7 +37,6 @@ class CommentModel {
     this.likeCount,
     this.reportCount,
     this.userTag,
-    this.parentId,
     this.postId = 0,
     required this.comments,
     required this.expanded,
@@ -78,7 +76,6 @@ class CommentModel {
     int? likeCount,
     int? reportCount,
     List<UserModel>? userTag,
-    int? parentId,
     int? postId,
     bool? favourite,
   }) =>
@@ -95,7 +92,6 @@ class CommentModel {
           likeCount: likeCount ?? this.likeCount,
           reportCount: reportCount ?? this.reportCount,
           userTag: userTag ?? this.userTag,
-          parentId: parentId ?? this.parentId,
           postId: postId ?? this.postId,
           favourite: favourite ?? this.favourite,
           comments: comments ?? this.comments,
